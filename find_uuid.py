@@ -1,0 +1,1 @@
+﻿import re with open(r"E:\AI\AI_folder\ems-gaming\foreo_apk\app\classes.dex", "rb") as f: data = f.read() text = data.decode("latin1", errors="ignore") matches = re.findall(r"0000[a-f0-9]{4}-0000-1000-8000-00805f9b34fb", text, re.I) for m in matches[:20]: print(m) 
