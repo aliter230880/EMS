@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOREO BEAR - Реальный Протокол</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .status.info { background: #e3f2fd; color: #1976d2; }
+        .status.success { background: #e8f5e9; color: #388e3c; }
+        .status.error { background: #ffebee; color: #c62828; }
+        .status.warning { background: #fff3e0; color: #f57c00; }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-connect {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-test {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .btn-stop {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px;
+        }
+        .log-command { color: #ffd700; font-weight: bold; }
+        .log-response { color: #00ffff; }
+        .log-success { color: #00ff00; font-weight: bold; }
+        .log-error { color: #ff6b6b; }
+        .log-info { color: #a8dadc; }
+        .log-warning { color: #ffaa00; }
+        .progress {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .instructions {
+            background: #fff9c4;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #fbc02d;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #f57f17;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+            color: #555;
+        }
+        .protocol-info {
+            background: #e1f5fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #0277bd;
+        }
+        .protocol-info h3 {
+            margin-top: 0;
+            color: #01579b;
+        }
+        .protocol-info code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 FOREO BEAR - Реальный Протокол</h1>
+        <p style="text-align: center; color: #666;">Команды из официального APK (functionlist.json)</p>
+
+        <div class="protocol-info">
+            <h3>📋 Извлеченный протокол:</h3>
+            <p><strong>Формат команды:</strong> 4 байта <code>[100, значение, режим, 128]</code></p>
+            <p><strong>Уровни интенсивности:</strong></p>
+            <ul style="font-family: monospace; font-size: 12px;">
+                <li>Уровень 1: [100, 23, 1, 128] = 0x64 0x17 0x01 0x80</li>
+                <li>Уровень 2: [100, 35, 1, 128] = 0x64 0x23 0x01 0x80</li>
+                <li>Уровень 3: [100, 41, 1, 128] = 0x64 0x29 0x01 0x80</li>
+                <li>Уровень 4: [100, 35, 2, 128] = 0x64 0x23 0x02 0x80</li>
+                <li>Уровень 5: [100, 41, 2, 128] = 0x64 0x29 0x02 0x80</li>
+                <li>Уровень 6: [100, 45, 2, 128] = 0x64 0x2D 0x02 0x80</li>
+                <li>Уровень 7: [100, 55, 2, 128] = 0x64 0x37 0x02 0x80</li>
+                <li>Уровень 8: [100, 61, 2, 128] = 0x64 0x3D 0x02 0x80</li>
+                <li>Уровень 9: [100, 66, 2, 128] = 0x64 0x42 0x02 0x80</li>
+                <li>Уровень 10: [100, 77, 2, 128] = 0x64 0x4D 0x02 0x80</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Инструкция:</h3>
+            <ol>
+                <li>Убедитесь что FOREO BEAR <strong>включён</strong> (нажмите кнопку на устройстве)</li>
+                <li>Нажмите <strong>"Подключиться к FOREO BEAR"</strong></li>
+                <li>Выберите устройство <strong>A4:34:F1:AB:D9:7C</strong> в списке</li>
+                <li>Нажмите <strong>"Запустить тест"</strong></li>
+                <li><strong>ДЕРЖИТЕ УСТРОЙСТВО В РУКЕ</strong> - почувствуете импульс при успехе!</li>
+                <li>Если почувствовали импульс - <strong>СРАЗУ нажмите "Стоп"</strong> и сообщите мне номер команды!</li>
+            </ol>
+        </div>
+
+        <div id="status" class="status info">
+            Готов к подключению
+        </div>
+
+        <button id="connectBtn" class="btn-connect" onclick="connect()">
+            🔌 Подключиться к FOREO BEAR
+        </button>
+
+        <button id="testBtn" class="btn-test" onclick="startTest()" disabled>
+            ▶️ Запустить тест (10 команд)
+        </button>
+
+        <button id="stopBtn" class="btn-stop" onclick="stopTest()" disabled>
+            ⏹️ Стоп
+        </button>
+
+        <div class="progress">
+            <div id="progressBar" class="progress-bar">0%</div>
+        </div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        let device = null;
+        let characteristic_fff1 = null;
+        let notifyChar_fff3 = null;
+        let notifyChar_a0b = null;
+        let notifyChar_a0c = null;
+        let testing = false;
+
+        // РЕАЛЬНЫЕ КОМАНДЫ ИЗ APK
+        const TEST_COMMANDS = [
+            {name: 'Level 1', bytes: [100, 23, 1, 128]},
+            {name: 'Level 2', bytes: [100, 35, 1, 128]},
+            {name: 'Level 3', bytes: [100, 41, 1, 128]},
+            {name: 'Level 4', bytes: [100, 35, 2, 128]},
+            {name: 'Level 5', bytes: [100, 41, 2, 128]},
+            {name: 'Level 6', bytes: [100, 45, 2, 128]},
+            {name: 'Level 7', bytes: [100, 55, 2, 128]},
+            {name: 'Level 8', bytes: [100, 61, 2, 128]},
+            {name: 'Level 9', bytes: [100, 66, 2, 128]},
+            {name: 'Level 10', bytes: [100, 77, 2, 128]},
+        ];
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function setStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function updateProgress(current, total) {
+            const percent = Math.round((current / total) * 100);
+            const bar = document.getElementById('progressBar');
+            bar.style.width = percent + '%';
+            bar.textContent = `${percent}% (${current}/${total})`;
+        }
+
+        async function connect() {
+            try {
+                log('🔍 Поиск FOREO BEAR...', 'info');
+                setStatus('Поиск устройства...', 'info');
+
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'BEAR' }],
+                    optionalServices: ['0000fff0-0000-1000-8000-00805f9b34fb']
+                });
+
+                log(`✅ Найдено: ${device.name}`, 'success');
+
+                const server = await device.gatt.connect();
+                log('🔗 Подключено к GATT серверу', 'success');
+
+                const service = await server.getPrimaryService('0000fff0-0000-1000-8000-00805f9b34fb');
+                log('📡 Получен сервис 0000fff0', 'success');
+
+                characteristic_fff1 = await service.getCharacteristic('0000fff1-0000-1000-8000-00805f9b34fb');
+                log('✔ fff1 готова (write channel)', 'info');
+
+                notifyChar_fff3 = await service.getCharacteristic('0000fff3-0000-1000-8000-00805f9b34fb');
+                await notifyChar_fff3.startNotifications();
+                notifyChar_fff3.addEventListener('characteristicvaluechanged', handleNotification);
+                log('🔔 Notifications fff3 включены', 'success');
+
+                notifyChar_a0b = await service.getCharacteristic('00000a0b-0000-1000-8000-00805f9b34fb');
+                await notifyChar_a0b.startNotifications();
+                notifyChar_a0b.addEventListener('characteristicvaluechanged', handleNotification);
+                log('🔔 Notifications a0b включены', 'success');
+
+                notifyChar_a0c = await service.getCharacteristic('00000a0c-0000-1000-8000-00805f9b34fb');
+                await notifyChar_a0c.startNotifications();
+                notifyChar_a0c.addEventListener('characteristicvaluechanged', handleNotification);
+                log('🔔 Notifications a0c включены', 'success');
+
+                setStatus('✅ Подключено! Готов к тестированию', 'success');
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('testBtn').disabled = false;
+
+            } catch (error) {
+                log(`❌ Ошибка: ${error}`, 'error');
+                setStatus('Ошибка подключения', 'error');
+            }
+        }
+
+        function handleNotification(event) {
+            const value = event.target.value;
+            const bytes = new Uint8Array(value.buffer);
+            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('-');
+            log(`📨 Ответ: ${hex}`, 'response');
+        }
+
+        async function startTest() {
+            if (testing) return;
+            testing = true;
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+
+            log('🚀 НАЧАЛО ТЕСТА', 'success');
+            log(`📊 Команд: ${TEST_COMMANDS.length}`, 'info');
+            log('⚠️ ДЕРЖИТЕ УСТРОЙСТВО В РУКЕ!', 'warning');
+            setStatus('🔬 Тестирование...', 'warning');
+
+            for (let i = 0; i < TEST_COMMANDS.length && testing; i++) {
+                const cmd = TEST_COMMANDS[i];
+                updateProgress(i + 1, TEST_COMMANDS.length);
+
+                try {
+                    log(`📤 [${i+1}/${TEST_COMMANDS.length}] ${cmd.name} → fff1: ${bytesToHex(cmd.bytes)}`, 'command');
+                    await characteristic_fff1.writeValue(new Uint8Array(cmd.bytes));
+                    await sleep(1500); // 1.5 сек между командами
+
+                } catch (error) {
+                    log(`⚠️ Ошибка "${cmd.name}": ${error.message}`, 'error');
+                }
+            }
+
+            if (testing) {
+                log('✅ ТЕСТ ЗАВЕРШЁН!', 'success');
+                log('❓ БЫЛ ЛИ ИМПУЛЬС/ВИБРАЦИЯ?', 'warning');
+                setStatus('✅ Тест завершён', 'success');
+            } else {
+                log('⏹️ Остановлено', 'warning');
+                setStatus('Остановлено', 'warning');
+            }
+
+            testing = false;
+            document.getElementById('testBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+
+        function stopTest() {
+            testing = false;
+            log('⏸️ Остановка...', 'warning');
+        }
+
+        function bytesToHex(bytes) {
+            return bytes.map(b => '0x' + b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        if (!navigator.bluetooth) {
+            setStatus('❌ Web Bluetooth не поддерживается. Откройте в Chrome!', 'error');
+            document.getElementById('connectBtn').disabled = true;
+        }
+    </script>
+</body>
+</html>
