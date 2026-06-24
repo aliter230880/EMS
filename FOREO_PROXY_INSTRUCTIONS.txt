@@ -1,0 +1,47 @@
+===============================================  
+FOREO API CAPTURE - ИНСТРУКЦИЯ  
+===============================================  
+  
+ВАРИАНТ 1: HTTP Toolkit (РЕКОМЕНДУЮ - ПРОСТОЙ)  
+  
+1. Скачай и установи HTTP Toolkit на ПК:  
+https://httptoolkit.com/download/  
+  
+2. Запусти HTTP Toolkit  
+  
+3. На телефоне настрой WiFi proxy:  
+- Settings -> WiFi -> Долгий тап на сеть -> Modify Network  
+- Advanced Options -> Proxy: Manual  
+- Hostname: 192.168.0.150  
+- Port: 8000 (HTTP Toolkit default)  
+  
+4. В HTTP Toolkit нажми Android Device -> Get Connected  
+Откроется QR код с ссылкой на сертификат  
+  
+5. На телефоне открой браузер, зайди:  
+http://192.168.0.150:8000/certificate  
+Установи сертификат (Settings -> Security -> Install from storage)  
+  
+6. Открой FOREO app на телефоне  
+Войди: fancy@mail.ru / Konfeta83!  
+Подключи BEAR устройство  
+  
+7. В HTTP Toolkit на ПК увидишь ВСЕ запросы  
+ИЩИ:  
+- URL: .../users/send_activation_code  
+- Request Headers: api-key, X-Api-Key, Authorization  
+- Response: access_token  
+- URL: .../devices  
+- Response: activation_token <-- ЭТО ГЛАВНОЕ!  
+  
+===============================================  
+  
+ВАРИАНТ 2: Fiddler Classic (Windows GUI)  
+  
+1. Скачай: https://www.telerik.com/download/fiddler  
+2. Tools -> Options -> HTTPS -> Decrypt HTTPS traffic  
+3. Tools -> Options -> Connections -> Allow remote computers  
+4. На телефоне Proxy: 192.168.0.150:8888  
+5. Сертификат: http://192.168.0.150:8888  
+  
+=============================================== 
