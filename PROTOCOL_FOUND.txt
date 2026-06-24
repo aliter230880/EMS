@@ -1,0 +1,31 @@
+================================================ 
+CRITICAL FINDINGS - HEX FORMAT REQUIRED 
+================================================ 
+ 
+PROBLEM SOLVED: 
+- Old format: bytearray([100,intensity,mode,128]) - WRONG! 
+- Correct format: HEX STRING like \" "0a1132\ 
+ 
+CORRECT COMMAND FORMAT for fff2 (MODE_UUID): 
+ 
+MOTOR: 
+Prefix: 0a11 
+Levels: 00,28,32,3C,46,50 (for intensity 0-5) 
+Example: 0a1132 = motor level 3 
+ 
+EMS: 
+Prefix: 0a20 
+Format: 0a20 + 01/00 + hex(intensity) 
+Example: 0a200105 = EMS level 5 ON 
+ 
+READY TO TEST: 
+File: test_motor.py (needs syntax fix) 
+Commands: Wake + Activate + Motor + EMS 
+ 
+NEXT STEPS: 
+1. Wake up BEAR device (press button) 
+2. Run test_motor.py (after fixing syntax) 
+3. Check if LEDs light up 
+4. Report results 
+ 
+================================================
